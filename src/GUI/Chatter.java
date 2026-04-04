@@ -3,11 +3,13 @@ package GUI;
 import javax.swing.*;
 
 import Net.Receiver;
+import Net.Sender;
 
 import java.io.IOException;
 
 public class Chatter {
     Receiver receiver;
+    Sender sender;
     String ip;
     int port;
     String name;
@@ -31,6 +33,7 @@ public class Chatter {
 
             try{
                 receiver = new Receiver(ip, port);
+                sender = new Sender(ip, port);
                 validInput = true;
             }
             catch (IOException e){
