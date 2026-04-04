@@ -1,11 +1,15 @@
 import javax.swing.*;
-import javax.swing.border.Border;
+
+import Components.InputField;
+import Components.MessageArea;
+import Components.UsersArea;
 
 import Net.Receiver;
 import Net.Sender;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.UUID;
 
 public class Chatter extends JFrame {
     Receiver receiver;
@@ -13,6 +17,7 @@ public class Chatter extends JFrame {
     String ip;
     int port;
     String name;
+    String clientID;
 
     public Chatter(){
         boolean validInput = false;
@@ -44,28 +49,14 @@ public class Chatter extends JFrame {
         while(name == null){
             name = JOptionPane.showInputDialog(null, "Name: ");
             if(name == null){
-                JOptionPane.showMessageDialog(null, "Invalid name");
+                JOptionPane.showMessageDialog(null, "Invalid name.");
             }
         }
 
         JPanel panel = new JPanel(new BorderLayout());
-        JTextArea usersArea = new JTextArea(20,30);
-        JTextField inputField = new JTextField(100);
-        JScrollPane messageArea = new JScrollPane();
-        JTextArea messageTextArea = new JTextArea(20,70);
-
-        Border border = BorderFactory.createLineBorder(Color.GRAY, 1);
-
-        messageArea.setBorder(border);
-        usersArea.setBorder(border);
-        inputField.setBorder(border);
-
-        messageArea.setViewportView(messageTextArea);
-        messageTextArea.setFocusable(false);
-        messageTextArea.setLineWrap(true);
-        messageTextArea.setEditable(false);
-        messageArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-        usersArea.setFocusable(false);
+        JTextArea usersArea = new UsersArea();
+        JTextField inputField = new InputField(sender, name);
+        JScrollPane messageArea = new MessageArea();
 
         setTitle("Chatter");
         add(panel);
@@ -78,16 +69,16 @@ public class Chatter extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        receiver.startReceive(messageTextArea);
-        inputField.addActionListener(ev -> {
-            try{
-                sender.sendMsg(inputField.getText());
-                inputField.setText("");
-            }
-            catch(IOException exc){
-                exc.printStackTrace();
-            }
-        });
+        clientID = UUID.randomUUID().toString();
+
+        receiver.startReceive((JTextArea)messageArea.getViewport().getComponent(0), usersArea, name, sender);
+        try{
+            sender.sendMsg("UserJoined:"+name);
+            sender.sendMsg("RequestSync");
+        }
+        catch(IOException e){
+            JOptionPane.showMessageDialog(null, "Error Sending Message.");
+        }
     }
 
     private void validateChatRoomInput(String chatRoom) throws InvalidInputIpException {
