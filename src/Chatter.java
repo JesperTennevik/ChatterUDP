@@ -1,13 +1,13 @@
-package GUI;
-
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import Net.Receiver;
 import Net.Sender;
 
+import java.awt.*;
 import java.io.IOException;
 
-public class Chatter {
+public class Chatter extends JFrame {
     Receiver receiver;
     Sender sender;
     String ip;
@@ -48,7 +48,46 @@ public class Chatter {
             }
         }
 
-        Thread rec = Thread.startVirtualThread(receiver);
+        JPanel panel = new JPanel(new BorderLayout());
+        JTextArea usersArea = new JTextArea(20,30);
+        JTextField inputField = new JTextField(100);
+        JScrollPane messageArea = new JScrollPane();
+        JTextArea messageTextArea = new JTextArea(20,70);
+
+        Border border = BorderFactory.createLineBorder(Color.GRAY, 1);
+
+        messageArea.setBorder(border);
+        usersArea.setBorder(border);
+        inputField.setBorder(border);
+
+        messageArea.setViewportView(messageTextArea);
+        messageTextArea.setFocusable(false);
+        messageTextArea.setLineWrap(true);
+        messageTextArea.setEditable(false);
+        messageArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        usersArea.setFocusable(false);
+
+        setTitle("Chatter");
+        add(panel);
+        panel.add(messageArea, BorderLayout.CENTER);
+        panel.add(usersArea, BorderLayout.EAST);
+        panel.add(inputField, BorderLayout.SOUTH);
+
+        pack();
+        setVisible(true);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        receiver.startReceive(messageTextArea);
+        inputField.addActionListener(ev -> {
+            try{
+                sender.sendMsg(inputField.getText());
+                inputField.setText("");
+            }
+            catch(IOException exc){
+                exc.printStackTrace();
+            }
+        });
     }
 
     private void validateChatRoomInput(String chatRoom) throws InvalidInputIpException {
@@ -64,6 +103,8 @@ public class Chatter {
 
         // can/should add validations for ip och port ranges.
     }
+
+    static void main(String[] args){ SwingUtilities.invokeLater(Chatter::new); }
 }
 
 class InvalidInputIpException extends Exception{
