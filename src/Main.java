@@ -1,5 +1,13 @@
+import javax.swing.*;
+
+import GUI.Chatter;
+
 public class Main {
-    public static void main(String[] args){
-        IO.println("yo");
+    static void main(String[] args){
+        try {
+            SwingUtilities.invokeLater(Chatter::new);
+        } catch(Exception e){
+            IO.println("Något gick fel.");
+        }
     }
 }
