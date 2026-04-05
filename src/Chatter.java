@@ -10,6 +10,8 @@ import Net.ReceiverEventListener;
 import Net.Sender;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -108,6 +110,14 @@ public class Chatter extends JFrame {
 
         sender.sendMsg("UserJoined:"+name);
         sender.sendMsg("RequestSync");
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                sender.sendMsg("UserLeft:"+name);
+                super.windowClosing(e);
+            }
+        });
     }
 
     private void updateUsers(){

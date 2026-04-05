@@ -24,6 +24,6 @@ public class disconnectButton extends JButton implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
         sender.sendMsg("UserLeft:"+name);
-        System.exit(1);
+        System.exit(0);
     }
 }
