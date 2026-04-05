@@ -15,7 +15,7 @@ public class Receiver {
         socket.joinGroup(new InetSocketAddress(ip, port), NetworkInterface.getByInetAddress(InetAddress.getLocalHost()));
     }
 
-    public void startReceive(JTextArea textArea, JTextArea usersArea, String name, Sender sender){
+    public void startReceive(){
         Thread.startVirtualThread(() -> {
             int packetSize = 512;
             DatagramPacket packet = new DatagramPacket(new byte[packetSize], packetSize);

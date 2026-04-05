@@ -81,7 +81,7 @@ public class Chatter extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        receiver.startReceive((JTextArea)messageArea.getViewport().getComponent(0), usersArea, name, sender);
+        receiver.startReceive();
         receiver.registerRecieverListner(new ReceiverEventListener() {
             @Override
             public void OnUserJoined(String user) {
