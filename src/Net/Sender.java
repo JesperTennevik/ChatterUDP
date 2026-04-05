@@ -1,5 +1,6 @@
 package Net;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.*;
 
@@ -13,9 +14,14 @@ public class Sender {
         socket = new MulticastSocket(null);
     }
 
-    public void sendMsg(String message) throws IOException {
+    public void sendMsg(String message) {
         byte[] data = message.getBytes();
         DatagramPacket packet = new DatagramPacket(data, data.length, iAdr, port);
-        socket.send(packet);
+        try{
+            socket.send(packet);
+        }
+        catch(IOException e){
+            JOptionPane.showMessageDialog(null, "Error Sending Message.");
+        }
     }
 }

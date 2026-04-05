@@ -5,11 +5,12 @@ import Components.MessageArea;
 import Components.UsersArea;
 
 import Net.Receiver;
+import Net.ReceiverEventListener;
 import Net.Sender;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.ArrayList;
 
 public class Chatter extends JFrame {
     Receiver receiver;
@@ -17,7 +18,12 @@ public class Chatter extends JFrame {
     String ip;
     int port;
     String name;
-    String clientID;
+    ArrayList<String> activeUsers = new ArrayList<>();
+
+    JPanel panel;
+    JTextArea usersArea;
+    JTextField inputField;
+    JScrollPane messageArea;
 
     public Chatter(){
         boolean validInput = false;
@@ -53,10 +59,10 @@ public class Chatter extends JFrame {
             }
         }
 
-        JPanel panel = new JPanel(new BorderLayout());
-        JTextArea usersArea = new UsersArea();
-        JTextField inputField = new InputField(sender, name);
-        JScrollPane messageArea = new MessageArea();
+        panel = new JPanel(new BorderLayout());
+        usersArea = new UsersArea();
+        inputField = new InputField(sender, name);
+        messageArea = new MessageArea();
 
         setTitle("Chatter");
         add(panel);
@@ -69,16 +75,44 @@ public class Chatter extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        clientID = UUID.randomUUID().toString();
-
         receiver.startReceive((JTextArea)messageArea.getViewport().getComponent(0), usersArea, name, sender);
-        try{
-            sender.sendMsg("UserJoined:"+name);
-            sender.sendMsg("RequestSync");
-        }
-        catch(IOException e){
-            JOptionPane.showMessageDialog(null, "Error Sending Message.");
-        }
+        receiver.registerRecieverListner(new ReceiverEventListener() {
+            @Override
+            public void OnUserJoined(String user) {
+                activeUsers.add(user);
+                updateUsers();
+            }
+
+            @Override
+            public void OnUserLeft(String user) {
+                activeUsers.remove(user);
+                updateUsers();
+            }
+
+            @Override
+            public void OnRequestSync() {
+                activeUsers.clear();
+                sender.sendMsg("UserPresent:"+name);
+            }
+
+            @Override
+            public void OnMessageReceived(String message){
+                SwingUtilities.invokeLater(() -> ((JTextArea)messageArea.getViewport().getComponent(0))
+                        .append(message + "\n"));
+            }
+        });
+
+        sender.sendMsg("UserJoined:"+name);
+        sender.sendMsg("RequestSync");
+    }
+
+    private void updateUsers(){
+        SwingUtilities.invokeLater(() -> {
+            usersArea.setText("");
+            for(String user : activeUsers){
+                usersArea.append(user+"\n");
+            }
+        });
     }
 
     private void validateChatRoomInput(String chatRoom) throws InvalidInputIpException {

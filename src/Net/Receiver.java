@@ -3,11 +3,10 @@ package Net;
 import javax.swing.*;
 import java.io.IOException;
 import java.net.*;
-import java.util.ArrayList;
 
 public class Receiver {
     MulticastSocket socket;
-    ArrayList<String> activeUsers = new ArrayList<>();
+    ReceiverEventListener listener;
 
     public Receiver(String ip, int port) throws IOException {
         socket = new MulticastSocket(null);
@@ -27,20 +26,17 @@ public class Receiver {
 
                     if(message.startsWith("UserJoined:") || message.startsWith("UserPresent:")){
                         String[] split = message.split(":");
-                        activeUsers.add(split[1]);
-                        updateUsers(usersArea);
+                        listener.OnUserJoined(split[1]);
                     }
                     else if(message.startsWith("UserLeft:")){
                         String[] split = message.split(":");
-                        activeUsers.remove(split[1]);
-                        updateUsers(usersArea);
+                        listener.OnUserLeft(split[1]);
                     }
                     else if(message.startsWith("RequestSync")){
-                        activeUsers.clear();
-                        sender.sendMsg("UserPresent:"+name);
+                        listener.OnRequestSync();
                     }
                     else {
-                        SwingUtilities.invokeLater(() -> textArea.append(message + "\n"));
+                        listener.OnMessageReceived(message);
                     }
                 }
                 catch(IOException e){
@@ -50,13 +46,7 @@ public class Receiver {
             }
         });
     }
-
-    private void updateUsers(JTextArea usersArea){
-        SwingUtilities.invokeLater(() -> {
-            usersArea.setText("");
-            for(String user : activeUsers){
-                usersArea.append(user+"\n");
-            }
-        });
+    public void registerRecieverListner(ReceiverEventListener listner){
+        this.listener = listner;
     }
 }

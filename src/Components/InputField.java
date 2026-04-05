@@ -23,12 +23,7 @@ public class InputField extends JTextField implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        try{
-            sender.sendMsg(name + ": " + getText());
-            SwingUtilities.invokeLater(() -> setText(""));
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+        sender.sendMsg(name + ": " + getText());
+        SwingUtilities.invokeLater(() -> setText(""));
     }
 }
