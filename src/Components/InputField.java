@@ -7,7 +7,6 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 public class InputField extends JTextField implements ActionListener {
     Sender sender;
