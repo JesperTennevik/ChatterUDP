@@ -4,6 +4,7 @@ import Components.InputField;
 import Components.MessageArea;
 import Components.UsersArea;
 
+import Components.disconnectButton;
 import Net.Receiver;
 import Net.ReceiverEventListener;
 import Net.Sender;
@@ -24,6 +25,7 @@ public class Chatter extends JFrame {
     JTextArea usersArea;
     JTextField inputField;
     JScrollPane messageArea;
+    JButton disconnectButton;
 
     public Chatter(){
         boolean validInput = false;
@@ -63,12 +65,14 @@ public class Chatter extends JFrame {
         usersArea = new UsersArea();
         inputField = new InputField(sender, name);
         messageArea = new MessageArea();
+        disconnectButton = new disconnectButton(sender, name);
 
         setTitle("Chatter");
         add(panel);
         panel.add(messageArea, BorderLayout.CENTER);
         panel.add(usersArea, BorderLayout.EAST);
         panel.add(inputField, BorderLayout.SOUTH);
+        panel.add(disconnectButton, BorderLayout.NORTH);
 
         pack();
         setVisible(true);
