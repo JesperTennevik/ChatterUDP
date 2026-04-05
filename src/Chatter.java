@@ -3,8 +3,8 @@ import javax.swing.*;
 import Components.InputField;
 import Components.MessageArea;
 import Components.UsersArea;
-
 import Components.disconnectButton;
+
 import Net.Receiver;
 import Net.ReceiverEventListener;
 import Net.Sender;
@@ -82,7 +82,7 @@ public class Chatter extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         receiver.startReceive();
-        receiver.registerRecieverListner(new ReceiverEventListener() {
+        receiver.registerReceiverListener(new ReceiverEventListener() {
             @Override
             public void OnUserJoined(String user) {
                 activeUsers.add(user);
@@ -151,4 +151,3 @@ class InvalidInputIpException extends Exception{
         super(m);
     }
 }
-

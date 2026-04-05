@@ -46,7 +46,7 @@ public class Receiver {
             }
         });
     }
-    public void registerRecieverListner(ReceiverEventListener listner){
-        this.listener = listner;
+    public void registerReceiverListener(ReceiverEventListener listener){
+        this.listener = listener;
     }
 }
