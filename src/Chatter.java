@@ -130,17 +130,42 @@ public class Chatter extends JFrame {
     }
 
     private void validateChatRoomInput(String chatRoom) throws InvalidInputIpException {
-        if(!chatRoom.contains(":")) { throw new InvalidInputIpException("Requires format: Ip:Port"); }
+        if (!chatRoom.contains(":")) { throw new InvalidInputIpException("Requires format: Ip:Port"); }
 
         String[] split = chatRoom.split(":");
-        if (split.length != 2) { throw new InvalidInputIpException("Requires format: Ip:Port."); }
-        else if (split[0].length() != 15) { throw new InvalidInputIpException("Invalid ip address."); }
-        else if (split[1].length() != 4) { throw new InvalidInputIpException("Invalid port."); }
+        if (split.length != 2) { throw new InvalidInputIpException("Requires format: Ip:Port"); }
 
-        try { Integer.parseInt(split[1]); }
-        catch (Exception e) { throw new InvalidInputIpException("Invalid Port"); }
+        String ip = split[0];
+        String port = split[1];
 
-        // can/should add validations for ip och port ranges.
+        if (!isValidIp(ip)) { throw new InvalidInputIpException("Invalid Ip address"); }
+
+        if (!isValidPort(port)) { throw new InvalidInputIpException("Invalid port"); }
+    }
+
+    private boolean isValidPort(String portStr) {
+        try {
+            int port = Integer.parseInt(portStr);
+            return port >= 1 && port <= 65535;
+        } catch (NumberFormatException e) { return false; }
+    }
+
+    private boolean isValidIp(String ip) {
+        String[] parts = ip.split("\\.");
+        if (parts.length != 4) { return false; }
+
+
+        for (int i = 0; i < 4; i++) {
+            try {
+                int value = Integer.parseInt(parts[i]);
+                if(i == 0){
+                    if(value < 224 || value > 239) { return false; }
+                } else {
+                    if(value < 0 || value > 255) { return false; }
+                }
+            } catch (NumberFormatException e) { return false; }
+        }
+        return true;
     }
 
     static void main(String[] args){ SwingUtilities.invokeLater(Chatter::new); }
